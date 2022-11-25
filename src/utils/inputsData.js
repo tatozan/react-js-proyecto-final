@@ -5,7 +5,7 @@ export const inputs = [
         id: 1,
         name: 'name',
         placeholder: 'John',
-        label: 'Frist Name',
+        label: 'First Name',
         type: 'text',
         pattern: "[A-ZÑa-zñáéíóúÁÉÍÓÚ'° ]{3,50}",
         errorMsg:"Name should be 3-50 characters and should not include special characters!",
