@@ -5,12 +5,10 @@ import Button from 'react-bootstrap/Button';
 
 export default function ItemCount({stock, initial, onAdd, id}) {
 
-  //console.log(initial);
-  const [count, setCount] = useState (initial); 
-
-  
-  return (
-    <>
+    const [count, setCount] = useState (initial); 
+ 
+    return (
+        <>
             <Button 
                 variant="light" 
                 disabled={count <= 0}
@@ -27,6 +25,6 @@ export default function ItemCount({stock, initial, onAdd, id}) {
                 onClick={() => onAdd(count)}
                 >Add to cart
             </Button>
-    </>
-  )
+        </>
+    )
 }

@@ -3,9 +3,11 @@ import { Button } from 'react-bootstrap';
 import { useContext, useState } from 'react';
 import { useForm } from '../hooks/useForm';
 import { CartContext } from '../context/CartContext';
+import { serverTimestamp } from 'firebase/firestore';
+import { writeNewOrder } from '../services/firebaseConfig'
 import FormInput from './FormInput';
-import { collection, addDoc } from "firebase/firestore"
-import { db } from '../services/firebaseConfig'
+import {inputs} from '../utils/inputsData'
+import '../css/Checkout.css'
 
 
 
@@ -21,66 +23,42 @@ export default function Checkout() {
         confirmEmail:'',
     })
 
-    //const [orderId, setOrderId] = useState('');
+    const [orderId, setOrderId] = useState('');
 
-    const inputs = [
-        {
-            id: 1,
-            name: 'name',
-            label: 'Frist Name',
-            type: 'text',
-        },
-        {
-            id: 2,
-            name: 'surname',
-            label: 'Last Name',
-            type: 'text',
-        },
-        {
-            id: 3,
-            name: 'phoneNumber',
-            label: 'Phone Number',
-            type: 'text',
-        },
-        {
-            id: 4,
-            name: 'email',
-            label: 'Email',
-            type: 'email',
-        },
-        {
-            id: 5,
-            name: 'confirmEmail',
-            label: 'Confirm Email',
-            type: 'email',
-        },
-    ]
 
     const handleSubmit = (event) =>{
         
         event.preventDefault();
-        const orders = collection(db, 'myorderslist')
-
-        //Ver ERROR de DB
+        
         const newOrder = {
-            buyer: values, 
+            buyer: (({confirmEmail, ...rest}) => rest)(values), //Filter confirmEmail
             items: cart,
-            //total: cartTotal,
+            total: cartTotal,
+            date: serverTimestamp(),
         } 
 
-
-        /*
-        addDoc(ordersRef, order);
+        writeNewOrder(newOrder)
             .then(data => {
                 setOrderId(data.id);
+                clearCart();
             })
             .catch( errorMessage => {
                 console.error(errorMessage);
+                clearCart();
             }) 
-        */
+        
     }
 
-    
+    if (orderId) {
+        return (
+            <div className="container my-5">
+                <h2>Thanks for your order!, {values.name}</h2>
+                <h3 className='order-submitted'>Your order has been submitted</h3>
+                <hr/>
+                <p>Your order number is: <strong>{orderId}</strong></p>
+            </div>
+        )
+    }
   
     
     return (
@@ -88,7 +66,11 @@ export default function Checkout() {
         <h2>Checkout</h2>
         <div className='form-wrap'>
             <form onSubmit={handleSubmit}>
-                {inputs.map(input => <FormInput {...input} value={values[input.name]} onChange={handleChange}/> )}
+                {inputs.map(input => {
+                                if (input.name==='confirmEmail') return <FormInput key={input.id} {...input} pattern={values.email} value={values[input.name]} onChange={handleChange}/>
+                                return <FormInput key={input.id} {...input} value={values[input.name]} onChange={handleChange}/> 
+                            })
+                }        
                 <Button type="submit" variant='success' className="buybtn">Buy now</Button>
             </form>
         </div>
@@ -98,3 +80,12 @@ export default function Checkout() {
 
 
 
+/*
+
+IMPORTANT! :El IF dentro del map que recorre los inputs está puesto para
+poder agregarle al input "confirmEmail" el pattern=values.email (que es para la validación).
+Este IF se tuvo que agregar porque al apartar la variable inputs a otro archivo, no se 
+puede establecer el pattern=values.email en la definición de la variable, porque justamente
+la variable values.email NO EXISTE en ese otro archivo que está dentro de utils. 
+
+*/

@@ -13,7 +13,6 @@ import {Link} from 'react-router-dom';
 
 export default function ItemDetail({item}) {
     
-    //console.log('Inicia render Hijo');
     const [showProceedToCheckoutBtn, setShowProceedToCheckoutBtn] = useState (false);
 
 
@@ -31,7 +30,6 @@ export default function ItemDetail({item}) {
     const {addToCart, isInCart} = useContext(CartContext);
 
     const onAdd = (count) => {
-            //console.log(`Agregaste ${count} unidades del producto ID N° ${id}`);
             setShowProceedToCheckoutBtn(true);
             addToCart(item, count)
     }
@@ -41,7 +39,6 @@ export default function ItemDetail({item}) {
     
     
     
-    //console.log('Termina render Hijo');
     return (
         <Container className='mt-5' >
             <Row>
@@ -55,7 +52,7 @@ export default function ItemDetail({item}) {
                                 <ListGroup.Item className='p-0 mb-4'>Price: {price}</ListGroup.Item>
                             </ListGroup>
                             {showProceedToCheckoutBtn ? 
-                                <Button as={Link} variant="primary" to={'/cart/'}>Proceed to checkout</Button> :
+                                <Button as={Link} variant="primary" to={'/cart/'}>Proceed to cart</Button> :
                                 <ItemCount initial={setInitialValue(id)} id={id} stock={stock} onAdd={onAdd}/>
                             }
                         </Card.Body>
